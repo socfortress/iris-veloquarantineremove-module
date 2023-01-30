@@ -128,12 +128,7 @@ class VeloquarantineremoveHandler(object):
                     pass
 
             # Define initial query
-            init_query = (
-                'SELECT collect_client(client_id="'
-                + client_id
-                + '", artifacts=["Windows.Remediation.Quarantine"],'
-                " spec=dict(`Windows.Remediation.Quarantine`=dict(`RemovePolicy`="Y"))) FROM scope()"
-            )
+            init_query = 'SELECT collect_client(client_id="' + client_id + '", artifacts=["Windows.Remediation.Quarantine"], spec=dict(`Windows.Remediation.Quarantine`=dict(`RemovePolicy`="Y"))) FROM scope()'
 
             # Send initial request
             print("Sending initial request - soc")
@@ -255,12 +250,7 @@ class VeloquarantineremoveHandler(object):
                     pass
 
             # Define initial query
-            init_query = (
-                'SELECT collect_client(client_id="'
-                + client_id
-                + '", artifacts=["Linux.Remediation.Quarantine"],'
-                " spec=dict(`Linux.Remediation.Quarantine`=dict(`RemovePolicy`="Y"))) FROM scope()"
-            )
+            init_query = 'SELECT collect_client(client_id="' + client_id + '", artifacts=["Linux.Remediation.Quarantine"], spec=dict(`Linux.Remediation.Quarantine`=dict(`RemovePolicy`="Y"))) FROM scope()'
 
             # Send initial request
             print("Sending initial request - soc")
