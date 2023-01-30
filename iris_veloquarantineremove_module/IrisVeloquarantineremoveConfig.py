@@ -8,8 +8,8 @@
 #
 #  License MIT
 
-module_name = "IrisVeloquarantineremove"
-module_description = ""
+module_name = "Remove Velociraptor Quarantine"
+module_description = "Invokes Velociraptor to remove quarantine of a device."
 interface_version = 1.1
 module_version = 1.0
 
@@ -19,58 +19,24 @@ pipeline_info = {}
 
 module_configuration = [
     {
-        "param_name": "veloquarantineremove_url",
-        "param_human_name": "veloquarantineremove URL",
-        "param_description": "",
+        "param_name": "velo_api_config",
+        "param_human_name": "velo API config file",
+        "param_description": (
+            "Specify the full path to the API config file (yaml) to be used by"
+            " pyvelociraptor. This must be accessible from the DFIR-IRIS container"
+        ),
         "default": None,
         "mandatory": True,
-        "type": "string"
+        "type": "string",
     },
-    {
-        "param_name": "veloquarantineremove_key",
-        "param_human_name": "veloquarantineremove key",
-        "param_description": "veloquarantineremove API key",
-        "default": None,
-        "mandatory": True,
-        "type": "sensitive_string"
-    },
-    
     {
         "param_name": "veloquarantineremove_manual_hook_enabled",
-        "param_human_name": "Manual triggers on IOCs",
+        "param_human_name": "Manual triggers on Assets",
         "param_description": "Set to True to offers possibility to manually triggers the module via the UI",
         "default": True,
         "mandatory": True,
         "type": "bool",
         "section": "Triggers"
-    },
-    {
-        "param_name": "veloquarantineremove_on_create_hook_enabled",
-        "param_human_name": "Triggers automatically on IOC create",
-        "param_description": "Set to True to automatically add a veloquarantineremove insight each time an IOC is created",
-        "default": False,
-        "mandatory": True,
-        "type": "bool",
-        "section": "Triggers"
-    },
-    {
-        "param_name": "veloquarantineremove_on_update_hook_enabled",
-        "param_human_name": "Triggers automatically on IOC update",
-        "param_description": "Set to True to automatically add a veloquarantineremove insight each time an IOC is updated",
-        "default": False,
-        "mandatory": True,
-        "type": "bool",
-        "section": "Triggers"
-    },
-    {
-        "param_name": "veloquarantineremove_report_as_attribute",
-        "param_human_name": "Add veloquarantineremove report as new IOC attribute",
-        "param_description": "Creates a new attribute on the IOC, base on the veloquarantineremove report. Attributes are based "
-                             "on the templates of this configuration",
-        "default": True,
-        "mandatory": True,
-        "type": "bool",
-        "section": "Insights"
     },# TODO: careful here, remove backslashes from \{\{ results| tojson(indent=4) \}\}
     {
         "param_name": "veloquarantineremove_domain_report_template",

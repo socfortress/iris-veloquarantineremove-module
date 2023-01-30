@@ -43,40 +43,18 @@ class IrisVeloquarantineremoveInterface(IrisModuleInterface):
         """
         self.module_id = module_id
         module_conf = self.module_dict_conf
-        if module_conf.get('veloquarantineremove_on_create_hook_enabled'):
-            status = self.register_to_hook(module_id, iris_hook_name='on_postload_ioc_create')
-            if status.is_failure():
-                self.log.error(status.get_message())
-                self.log.error(status.get_data())
-
-            else:
-                self.log.info("Successfully registered on_postload_ioc_create hook")
-        else:
-            self.deregister_from_hook(module_id=self.module_id, iris_hook_name='on_postload_ioc_create')
-
-        if module_conf.get('veloquarantineremove_on_update_hook_enabled'):
-            status = self.register_to_hook(module_id, iris_hook_name='on_postload_ioc_update')
-            if status.is_failure():
-                self.log.error(status.get_message())
-                self.log.error(status.get_data())
-
-            else:
-                self.log.info("Successfully registered on_postload_ioc_update hook")
-        else:
-            self.deregister_from_hook(module_id=self.module_id, iris_hook_name='on_postload_ioc_update')
-
         if module_conf.get('veloquarantineremove_manual_hook_enabled'):
-            status = self.register_to_hook(module_id, iris_hook_name='on_manual_trigger_ioc',
-                                           manual_hook_name='Get veloquarantineremove insight')
+            status = self.register_to_hook(module_id, iris_hook_name='on_manual_trigger_asset',
+                                           manual_hook_name='Remove Quarantine')
             if status.is_failure():
                 self.log.error(status.get_message())
                 self.log.error(status.get_data())
 
             else:
-                self.log.info("Successfully registered on_manual_trigger_ioc hook")
+                self.log.info("Successfully registered on_manual_trigger_asset hook")
 
         else:
-            self.deregister_from_hook(module_id=self.module_id, iris_hook_name='on_manual_trigger_ioc')
+            self.deregister_from_hook(module_id=self.module_id, iris_hook_name='on_manual_trigger_asset')
 
 
     def hooks_handler(self, hook_name: str, hook_ui_name: str, data: any):
@@ -90,7 +68,7 @@ class IrisVeloquarantineremoveInterface(IrisModuleInterface):
         """
 
         self.log.info(f'Received {hook_name}')
-        if hook_name in ['on_postload_ioc_create', 'on_postload_ioc_update', 'on_manual_trigger_ioc']:
+        if hook_name in ['on_manual_trigger_asset']:
             status = self._handle_ioc(data=data)
 
         else:
@@ -105,7 +83,7 @@ class IrisVeloquarantineremoveInterface(IrisModuleInterface):
         return InterfaceStatus.I2Success(data=data, logs=list(self.message_queue))
 
 
-    def _handle_ioc(self, data) -> InterfaceStatus.IIStatus:
+    def _handle_asset(self, data) -> InterfaceStatus.IIStatus:
         """
         Handle the IOC data the module just received. The module registered
         to on_postload hooks, so it receives instances of IOC object.
@@ -122,10 +100,14 @@ class IrisVeloquarantineremoveInterface(IrisModuleInterface):
 
         in_status = InterfaceStatus.IIStatus(code=InterfaceStatus.I2CodeNoError)
 
-        for element in data:
+        for asset in data:
             # Check that the IOC we receive is of type the module can handle and dispatch
-            if 'domain' in element.ioc_type.type_name:
-                status = veloquarantineremove_handler.handle_domain(ioc=element)
+            if 'Linux - Computer' in asset.asset_type.asset_name:
+                status = veloquarantineremove_handler.handle_linux(asset=asset)
+                in_status = InterfaceStatus.merge_status(in_status, status)
+
+            if 'Windows -' in asset.asset_type.asset_name:
+                status = veloquarantineremove_handler.handle_windows(asset=asset)
                 in_status = InterfaceStatus.merge_status(in_status, status)
 
             #elif element.ioc_type.type_name in ['md5', 'sha224', 'sha256', 'sha512']:
@@ -135,7 +117,7 @@ class IrisVeloquarantineremoveInterface(IrisModuleInterface):
             # elif element.ioc_type.type_name in etc...
 
             else:
-                self.log.error(f'IOC type {element.ioc_type.type_name} not handled by veloquarantineremove module. Skipping')
+                self.log.error(f'IOC type {asset.asset_type.asset_name} not handled by veloquarantineremove module. Skipping')
 
         return in_status(data=data)
     
