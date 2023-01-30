@@ -69,7 +69,7 @@ class IrisVeloquarantineremoveInterface(IrisModuleInterface):
 
         self.log.info(f'Received {hook_name}')
         if hook_name in ['on_manual_trigger_asset']:
-            status = self._handle_ioc(data=data)
+            status = self._handle_asset(data=data)
 
         else:
             self.log.critical(f'Received unsupported hook {hook_name}')
